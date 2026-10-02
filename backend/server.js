@@ -3,7 +3,8 @@ import express from "express";
 import connectDB from "./src/config/db.js";
 import cors from "cors";
 import morgan from "morgan";
-import { errorHandler, notFound } from "./src/middleware/errorMiddelware.js";
+import { errorHandler, notFound } from "./src/middleware/error.middleware.js";
+import authRoutes from "./src/routes/authRoute.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", success: true, message: "NTP CRM API is running" });
 });
 
+app.use("/api/auth", authRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
