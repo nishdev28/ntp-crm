@@ -1,8 +1,10 @@
 // import axios from "axios";
 
+import axios from "axios";
+
 /* localStorage key for the auth token — used by AuthContext (and by the real
    API client below, once enabled). */
-export const TOKEN_KEY = "NTP_crm_token";
+export const TOKEN_KEY = "ntp_crm_token";
 
 /* ─────────────────────────────────────────────────────────────────────────
    🔌 BACKEND INTEGRATION — currently DISABLED for the UI-only boilerplate.
@@ -18,7 +20,7 @@ export const TOKEN_KEY = "NTP_crm_token";
    That's the entire switch from "UI demo" to "fully wired app".
    ───────────────────────────────────────────────────────────────────────── */
 
-/*
+
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({ baseURL });
@@ -48,4 +50,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-*/

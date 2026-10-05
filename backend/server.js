@@ -6,9 +6,11 @@ import morgan from "morgan";
 import { errorHandler, notFound } from "./src/middleware/error.middleware.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import leadRoutes from "./src/routes/leadRoutes.js";
-import contactRoutes from "./src/routes/contactRoutes.js"
-import noteRoutes from "./src/routes/noteRoutes.js"
-import taskRouter from "./src/routes/taskRoutes.js"
+import contactRoutes from "./src/routes/contactRoutes.js";
+import noteRoutes from "./src/routes/noteRoutes.js";
+import taskRoutes from "./src/routes/taskRoutes.js";
+import aiRoutes from "./src/routes/aiRoutes.js";
+import anaylticsRouter from "./src/routes/anaylticsRouter.js"
 
 const app = express();
 
@@ -36,7 +38,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/notes", noteRoutes);
-app.use("/api/tasks", taskRouter);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/analytics", anaylticsRouter)
 
 app.use(notFound);
 app.use(errorHandler);
@@ -44,5 +48,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port http://localhost${PORT}`);
+  console.log(
+    `Server is running in ${process.env.NODE_ENV} mode on port http://localhost${PORT}`,
+  );
 });
