@@ -1,6 +1,6 @@
 import Task from "../models/Task.js";
 import { asyncHandler }from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const getTasks = asyncHandler(async (req, res) => {
   const { relatedLead, status, priority } = req.query;

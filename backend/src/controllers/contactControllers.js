@@ -1,6 +1,6 @@
 import Contact from "../models/Contact.js";
 import { asyncHandler }from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const getContacts = asyncHandler(async (req, res) => {
     const {search, tag}= req.query;

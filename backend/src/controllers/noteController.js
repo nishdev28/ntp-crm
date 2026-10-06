@@ -1,6 +1,6 @@
 import Note from "../models/Note.js";
 import { asyncHandler }from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const getNotes = asyncHandler(async (req, res) => {
   const { lead, contact, search } = req.query;
