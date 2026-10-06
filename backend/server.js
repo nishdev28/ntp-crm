@@ -10,7 +10,7 @@ import contactRoutes from "./src/routes/contactRoutes.js";
 import noteRoutes from "./src/routes/noteRoutes.js";
 import taskRoutes from "./src/routes/taskRoutes.js";
 import aiRoutes from "./src/routes/aiRoutes.js";
-import anaylticsRouter from "./src/routes/anaylticsRouter.js"
+import anaylticsRouter from "./src/routes/anaylticsRouter.js";
 
 const app = express();
 
@@ -19,7 +19,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: ["https://ntp-crm.vercel.app", "http://localhost:5173"],
     credentials: true,
   }),
 );
@@ -40,7 +40,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/analytics", anaylticsRouter)
+app.use("/api/analytics", anaylticsRouter);
 
 app.use(notFound);
 app.use(errorHandler);
