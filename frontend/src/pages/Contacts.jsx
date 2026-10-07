@@ -236,11 +236,11 @@ export default function Contacts() {
     <div className="space-y-6">
       {/* ── Page header ── */}
       <PageHeader
-        title="Contacts"
-        subtitle="Your people and professional relationships."
+        title="Contacts Directory"
+        subtitle="Manage personal relationships, client accounts, and stakeholders."
       >
-        <Button onClick={openNew}>
-          <Plus className="h-4 w-4" /> Add contact
+        <Button size="sm" onClick={openNew}>
+          <Plus className="h-3.5 w-3.5" /> Add Contact
         </Button>
       </PageHeader>
 
@@ -248,45 +248,45 @@ export default function Contacts() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile
           icon={Users}
-          tint="bg-brand-50 text-brand-600"
+          tint="bg-blue-500/10 text-blue-400"
           label="Total contacts"
           value={kpis.total}
         />
         <StatTile
           icon={Star}
-          tint="bg-amber-50 text-amber-500"
+          tint="bg-amber-500/10 text-amber-400"
           label="Favorites"
           value={kpis.favorites}
         />
         <StatTile
           icon={Building2}
-          tint="bg-sky-50 text-sky-600"
+          tint="bg-indigo-500/10 text-indigo-400"
           label="Companies"
           value={kpis.companies}
         />
         <StatTile
           icon={Tag}
-          tint="bg-violet-50 text-violet-600"
+          tint="bg-emerald-500/10 text-emerald-400"
           label="Tagged"
           value={kpis.tagged}
         />
       </div>
 
       {/* ── Toolbar Card ── */}
-      <Card className="space-y-4 p-4">
+      <Card className="space-y-3.5 p-4">
         {/* Search */}
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            placeholder="Search by name, email, or company…"
-            className="h-10 w-full rounded-xl border border-line bg-surface pl-10 pr-4 text-sm text-ink placeholder:text-ink-soft/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
+            placeholder="Search by name, email, or company..."
+            className="h-9 w-full rounded-lg border border-slate-800 bg-slate-900 pl-9 pr-3 text-xs text-slate-50 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-colors"
           />
         </div>
 
         {/* Tag chips + meta row */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800">
           {/* "All" chip */}
           <TagChip
             label="All"
@@ -312,13 +312,13 @@ export default function Contacts() {
             {filtersActive && (
               <button
                 onClick={() => setFilters({ search: "", tag: "" })}
-                className="inline-flex items-center gap-1 text-sm font-medium text-ink-soft transition hover:text-ink"
+                className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 transition hover:text-slate-50 cursor-pointer"
               >
-                <X className="h-3.5 w-3.5" /> Clear
+                <X className="h-3 w-3" /> Clear filters
               </button>
             )}
-            <span className="text-sm text-ink-soft">
-              <span className="font-semibold text-ink">{filtered.length}</span> of{" "}
+            <span className="text-xs text-slate-400 font-medium">
+              <span className="font-semibold text-slate-200 tabular-nums">{filtered.length}</span> of{" "}
               {contacts?.length ?? 0}
             </span>
             <ViewToggle view={view} onChange={setView} />
@@ -328,26 +328,28 @@ export default function Contacts() {
 
       {/* ── Results — loading / empty / grid / table ── */}
       {contacts === null ? (
-        <div className="flex items-center justify-center py-20">
+        <Card className="p-12 flex justify-center">
           <Spinner />
-        </div>
+        </Card>
       ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={Contact2}
-          title={filtersActive ? "No contacts match" : "No contacts yet"}
-          description={
-            filtersActive
-              ? "Try different search terms or clear the tag filter."
-              : "Add your first contact to start building your network."
-          }
-          action={
-            !filtersActive ? (
-              <Button onClick={openNew}>
-                <Plus className="h-4 w-4" /> Add contact
-              </Button>
-            ) : null
-          }
-        />
+        <Card>
+          <EmptyState
+            icon={Contact2}
+            title={filtersActive ? "No contacts match criteria" : "No contacts yet"}
+            description={
+              filtersActive
+                ? "Try different search keywords or clear the active tag filters."
+                : "Add your first contact to start building your relationship network."
+            }
+            action={
+              !filtersActive ? (
+                <Button size="sm" onClick={openNew}>
+                  <Plus className="h-3.5 w-3.5" /> Add Contact
+                </Button>
+              ) : null
+            }
+          />
+        </Card>
       ) : view === "grid" ? (
         /* ── Card grid view ── */
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -368,18 +370,18 @@ export default function Contacts() {
         /* ── Table view ── */
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b border-line bg-surface-muted/40">
-                <tr className="text-left text-xs uppercase tracking-wide text-ink-soft">
-                  <th className="px-6 py-3.5 font-medium">Contact</th>
-                  <th className="px-6 py-3.5 font-medium">Title</th>
-                  <th className="px-6 py-3.5 font-medium">Tags</th>
-                  <th className="px-6 py-3.5 font-medium">Email</th>
-                  <th className="px-6 py-3.5 font-medium">Phone</th>
-                  <th className="px-6 py-3.5 w-24" />
+            <table className="w-full text-xs">
+              <thead className="border-b border-slate-800 bg-slate-800/40 text-slate-500">
+                <tr className="text-left uppercase tracking-wider text-[11px]">
+                  <th className="px-4 py-3 font-medium">Contact & Role</th>
+                  <th className="px-4 py-3 font-medium">Title</th>
+                  <th className="px-4 py-3 font-medium">Tags</th>
+                  <th className="px-4 py-3 font-medium">Email</th>
+                  <th className="px-4 py-3 font-medium">Phone</th>
+                  <th className="px-4 py-3 w-16" />
                 </tr>
               </thead>
-              <tbody ref={tableRef}>
+              <tbody ref={tableRef} className="divide-y divide-slate-800">
                 {ordered.map((contact) => (
                   <ContactTableRow
                     key={contact._id}
@@ -422,57 +424,52 @@ export default function Contacts() {
         onConfirm={confirmDelete}
         loading={deleting}
         title="Remove this contact?"
-        description={`"${toDelete?.name}" will be permanently deleted and cannot be recovered.`}
-        confirmLabel="Remove contact"
+        description={`"${toDelete?.name}" will be permanently removed.`}
+        confirmLabel="Remove Contact"
       />
     </div>
   );
 }
 
-/* ─── StatTile ───────────────────────────────────────────────────────────────
-   KPI card: tinted icon square + label + large value.
-   Copied from Leads' StatTile pattern.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ─── StatTile ─────────────────────────────────────────────────────────────── */
 function StatTile({ icon: Icon, label, value, tint }) {
   return (
     <Card className="p-4">
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
             tint
           )}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-xs text-ink-soft">{label}</p>
-          <p className="font-display text-lg font-bold text-ink">{value}</p>
+          <p className="truncate text-xs text-slate-500 font-medium">{label}</p>
+          <p className="text-lg font-bold text-slate-50 tabular-nums">{value}</p>
         </div>
       </div>
     </Card>
   );
 }
 
-/* ─── TagChip ────────────────────────────────────────────────────────────────
-   Quick-filter pill for a single tag. Copied from Leads' StageChip pattern.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ─── TagChip ──────────────────────────────────────────────────────────────── */
 function TagChip({ label, count, active, onClick }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition",
+        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
         active
-          ? "border-transparent bg-brand-600 text-white shadow-sm"
-          : "border-line bg-surface text-ink-soft hover:text-ink hover:bg-surface-muted"
+          ? "border-slate-900 bg-slate-900 text-white shadow-2xs font-semibold"
+          : "border-slate-800 bg-slate-900 text-slate-300 hover:text-slate-50 hover:bg-slate-800/40"
       )}
     >
-      {label}
+      <span>{label}</span>
       <span
         className={cn(
-          "rounded-full px-1.5 text-xs font-semibold",
-          active ? "bg-white/20 text-white" : "bg-surface-muted text-ink-soft"
+          "rounded px-1.5 py-0.2 text-[10px] font-semibold tabular-nums",
+          active ? "bg-slate-800 text-slate-200" : "bg-slate-800 text-slate-500"
         )}
       >
         {count}
@@ -481,16 +478,14 @@ function TagChip({ label, count, active, onClick }) {
   );
 }
 
-/* ─── ViewToggle ─────────────────────────────────────────────────────────────
-   Segmented Table2 / LayoutGrid icon toggle. Copied from Leads.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ─── ViewToggle ───────────────────────────────────────────────────────────── */
 function ViewToggle({ view, onChange }) {
   const options = [
     { value: "grid", icon: LayoutGrid, label: "Card view" },
     { value: "table", icon: Table2, label: "Table view" },
   ];
   return (
-    <div className="flex items-center gap-1 rounded-full border border-line bg-surface-muted p-1">
+    <div className="flex items-center gap-0.5 rounded-lg border border-slate-800 bg-slate-800 p-0.5">
       {options.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
@@ -498,23 +493,20 @@ function ViewToggle({ view, onChange }) {
           title={label}
           aria-label={label}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full transition",
+            "flex h-7 w-7 items-center justify-center rounded-md transition-colors cursor-pointer",
             view === value
-              ? "bg-surface text-ink shadow-sm"
-              : "text-ink-soft hover:text-ink"
+              ? "bg-slate-900 text-slate-50 shadow-2xs font-semibold"
+              : "text-slate-500 hover:text-slate-50"
           )}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-3.5 w-3.5" />
         </button>
       ))}
     </div>
   );
 }
 
-/* ─── ContactCard ────────────────────────────────────────────────────────────
-   Single premium contact tile for the card grid view.
-   Shows avatar, name, title/company, favorite toggle, tags, email/phone.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ─── ContactCard ──────────────────────────────────────────────────────────── */
 function ContactCard({
   contact,
   flipId,
@@ -528,40 +520,40 @@ function ContactCard({
     <div
       data-flip-id={flipId}
       onClick={onOpen}
-      className="relative cursor-pointer rounded-2xl border border-line bg-surface p-5 shadow-(--shadow-card) transition-all duration-200 hover:-translate-y-0.5 hover:shadow-(--shadow-pop)"
+      className="relative cursor-pointer rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-2xs transition-all hover:border-slate-700 hover:shadow-xs"
     >
-      {/* Favorite star — top right, stopPropagation so card click doesn't fire */}
+      {/* Favorite star */}
       <button
         onClick={(e) => onToggleFavorite(e, contact)}
         disabled={favLoading}
         aria-label={contact.favorite ? "Unmark favorite" : "Mark as favorite"}
-        className="absolute right-4 top-4 rounded-lg p-1 text-ink-soft/40 transition hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+        className="absolute right-3.5 top-3.5 rounded-md p-1 text-slate-300 hover:text-amber-400 transition-colors cursor-pointer"
       >
         <Star
           className={cn(
-            "h-4 w-4 transition",
+            "h-4 w-4 transition-colors",
             contact.favorite ? "fill-amber-400 text-amber-400" : ""
           )}
         />
       </button>
 
-      {/* Dropdown — positioned below the star */}
+      {/* Dropdown */}
       <div
-        className="absolute right-3 top-10 mt-1"
+        className="absolute right-2.5 top-9"
         onClick={(e) => e.stopPropagation()}
       >
         <Dropdown
           trigger={
-            <button className="rounded-lg p-1.5 text-ink-soft/50 transition hover:bg-surface-muted hover:text-ink-soft">
-              <MoreHorizontal className="h-4 w-4" />
+            <button className="rounded-md p-1 text-slate-300 hover:bg-slate-800 hover:text-slate-300 transition-colors cursor-pointer">
+              <MoreHorizontal className="h-3.5 w-3.5" />
             </button>
           }
         >
           <DropdownItem onClick={onEdit}>
-            <Pencil className="h-4 w-4" /> Edit
+            <Pencil className="h-3.5 w-3.5" /> Edit
           </DropdownItem>
           <DropdownItem danger onClick={onDelete}>
-            <Trash2 className="h-4 w-4" /> Delete
+            <Trash2 className="h-3.5 w-3.5" /> Delete
           </DropdownItem>
         </Dropdown>
       </div>
@@ -570,11 +562,11 @@ function ContactCard({
       <div className="flex items-start gap-3 pr-8">
         <Avatar name={contact.name} size="md" />
         <div className="min-w-0">
-          <p className="font-semibold text-ink leading-tight truncate">
+          <p className="font-semibold text-xs text-slate-50 leading-tight truncate">
             {contact.name}
           </p>
           {(contact.title || contact.company) && (
-            <p className="mt-0.5 text-sm text-ink-soft truncate">
+            <p className="mt-0.5 text-[11px] text-slate-400 truncate">
               {[contact.title, contact.company].filter(Boolean).join(" · ")}
             </p>
           )}
@@ -583,17 +575,17 @@ function ContactCard({
 
       {/* Tags */}
       {contact.tags?.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap gap-1">
           {contact.tags.slice(0, 3).map((tag) => (
             <Badge
               key={tag}
-              className="bg-brand-50 text-brand-700 text-[11px] px-2 py-0.5"
+              className="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.2"
             >
               {tag}
             </Badge>
           ))}
           {contact.tags.length > 3 && (
-            <Badge className="bg-surface-muted text-ink-soft text-[11px] px-2 py-0.5">
+            <Badge className="bg-slate-800 text-slate-400 text-[10px] px-1.5 py-0.2">
               +{contact.tags.length - 3}
             </Badge>
           )}
@@ -601,16 +593,16 @@ function ContactCard({
       )}
 
       {/* Contact info rows */}
-      <div className="mt-3 space-y-1.5">
+      <div className="mt-3 space-y-1 pt-2 border-t border-slate-800 text-xs">
         {contact.email && (
-          <div className="flex items-center gap-2 text-sm text-ink-soft min-w-0">
-            <Mail className="h-3.5 w-3.5 shrink-0" />
+          <div className="flex items-center gap-2 text-slate-500 truncate">
+            <Mail className="h-3 w-3 shrink-0 text-slate-400" />
             <span className="truncate">{contact.email}</span>
           </div>
         )}
         {contact.phone && (
-          <div className="flex items-center gap-2 text-sm text-ink-soft">
-            <Phone className="h-3.5 w-3.5 shrink-0" />
+          <div className="flex items-center gap-2 text-slate-500">
+            <Phone className="h-3 w-3 shrink-0 text-slate-400" />
             <span>{contact.phone}</span>
           </div>
         )}
@@ -619,9 +611,7 @@ function ContactCard({
   );
 }
 
-/* ─── ContactTableRow ────────────────────────────────────────────────────────
-   Single row for the table view.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ─── ContactTableRow ──────────────────────────────────────────────────────── */
 function ContactTableRow({
   contact,
   flipId,
@@ -635,15 +625,15 @@ function ContactTableRow({
     <tr
       data-flip-id={flipId}
       onClick={onOpen}
-      className="group cursor-pointer border-b border-line last:border-0 transition hover:bg-surface-muted/50"
+      className="group cursor-pointer transition-colors hover:bg-slate-800/40"
     >
       {/* Contact (avatar + name + company) */}
-      <td className="px-6 py-3.5">
-        <div className="flex items-center gap-3">
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2.5">
           <Avatar name={contact.name} size="sm" />
           <div>
-            <p className="font-medium text-ink">{contact.name}</p>
-            <p className="text-xs text-ink-soft">
+            <p className="font-semibold text-slate-50 leading-tight">{contact.name}</p>
+            <p className="text-[11px] text-slate-400 leading-tight truncate">
               {contact.company || contact.email || "—"}
             </p>
           </div>
@@ -651,39 +641,39 @@ function ContactTableRow({
       </td>
 
       {/* Title */}
-      <td className="px-6 py-3.5 text-sm text-ink-soft">
+      <td className="px-4 py-3 text-slate-300">
         {contact.title || "—"}
       </td>
 
       {/* Tags */}
-      <td className="px-6 py-3.5">
+      <td className="px-4 py-3">
         <div className="flex flex-wrap gap-1">
           {(contact.tags || []).slice(0, 2).map((tag) => (
             <Badge
               key={tag}
-              className="bg-brand-50 text-brand-700 text-[11px] px-2 py-0.5"
+              className="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.2"
             >
               {tag}
             </Badge>
           ))}
           {(contact.tags || []).length > 2 && (
-            <Badge className="bg-surface-muted text-ink-soft text-[11px] px-2 py-0.5">
+            <Badge className="bg-slate-800 text-slate-400 text-[10px] px-1.5 py-0.2">
               +{contact.tags.length - 2}
             </Badge>
           )}
           {!(contact.tags?.length) && (
-            <span className="text-xs text-ink-soft/50">—</span>
+            <span className="text-slate-300">—</span>
           )}
         </div>
       </td>
 
       {/* Email */}
-      <td className="px-6 py-3.5 text-sm text-ink-soft">
+      <td className="px-4 py-3 text-slate-300">
         {contact.email ? (
           <a
             href={`mailto:${contact.email}`}
             onClick={(e) => e.stopPropagation()}
-            className="hover:text-brand-700 hover:underline transition"
+            className="hover:text-slate-50 hover:underline transition-colors"
           >
             {contact.email}
           </a>
@@ -693,39 +683,38 @@ function ContactTableRow({
       </td>
 
       {/* Phone */}
-      <td className="px-6 py-3.5 text-sm text-ink-soft">
+      <td className="px-4 py-3 text-slate-300 tabular-nums">
         {contact.phone || "—"}
       </td>
 
       {/* Actions */}
-      <td className="px-6 py-3.5" onClick={(e) => e.stopPropagation()}>
+      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-end gap-1">
-          {/* Favorite star */}
           <button
             onClick={(e) => onToggleFavorite(e, contact)}
             disabled={favLoading}
             aria-label={contact.favorite ? "Unmark favorite" : "Mark as favorite"}
-            className="rounded-lg p-1.5 text-ink-soft/40 transition hover:text-amber-400"
+            className="rounded p-1 text-slate-300 hover:text-amber-400 transition-colors cursor-pointer"
           >
             <Star
               className={cn(
-                "h-4 w-4 transition",
+                "h-3.5 w-3.5 transition-colors",
                 contact.favorite ? "fill-amber-400 text-amber-400" : ""
               )}
             />
           </button>
           <Dropdown
             trigger={
-              <button className="rounded-lg p-1.5 text-ink-soft transition hover:bg-surface-muted">
-                <MoreHorizontal className="h-4 w-4" />
+              <button className="rounded-md p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors cursor-pointer">
+                <MoreHorizontal className="h-3.5 w-3.5" />
               </button>
             }
           >
             <DropdownItem onClick={onEdit}>
-              <Pencil className="h-4 w-4" /> Edit
+              <Pencil className="h-3.5 w-3.5" /> Edit
             </DropdownItem>
             <DropdownItem danger onClick={onDelete}>
-              <Trash2 className="h-4 w-4" /> Delete
+              <Trash2 className="h-3.5 w-3.5" /> Delete
             </DropdownItem>
           </Dropdown>
         </div>
@@ -748,18 +737,18 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
           <Avatar name={contact.name} size="lg" />
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold text-ink">{contact.name}</h2>
+              <h2 className="text-xl font-semibold text-slate-50">{contact.name}</h2>
               {contact.favorite && (
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400 shrink-0" />
               )}
             </div>
             {(contact.title || contact.company) && (
-              <p className="text-sm text-ink-soft mt-0.5">
+              <p className="text-sm text-slate-400 mt-0.5">
                 {[contact.title, contact.company].filter(Boolean).join(" · ")}
               </p>
             )}
             {contact.favorite && (
-              <Badge className="mt-1.5 bg-amber-50 text-amber-700 text-[11px]">
+              <Badge className="mt-1.5 bg-amber-500/10 text-amber-400 text-[11px]">
                 Favorite
               </Badge>
             )}
@@ -767,7 +756,7 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
         </div>
 
         {/* Contact fields */}
-        <div className="rounded-2xl border border-line divide-y divide-line">
+        <div className="rounded-2xl border border-slate-800 divide-y divide-line">
           {contact.email && (
             <DrawerRow icon={<Mail className="h-4 w-4" />} label="Email">
               <a
@@ -792,7 +781,7 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
           )}
           {contact.company && (
             <DrawerRow icon={<Building2 className="h-4 w-4" />} label="Company">
-              <span className="text-ink">{contact.company}</span>
+              <span className="text-slate-50">{contact.company}</span>
             </DrawerRow>
           )}
         </div>
@@ -800,7 +789,7 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
         {/* Tags */}
         {contact.tags?.length > 0 && (
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-medium text-ink-soft uppercase tracking-wide mb-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
               <Tag className="h-3.5 w-3.5" /> Tags
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -816,23 +805,23 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
         {/* Notes */}
         {contact.notes && (
           <div>
-            <p className="text-xs font-medium text-ink-soft uppercase tracking-wide mb-2">
+            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
               Notes
             </p>
-            <p className="text-sm text-ink leading-relaxed whitespace-pre-line rounded-xl bg-surface-muted px-4 py-3">
+            <p className="text-sm text-slate-50 leading-relaxed whitespace-pre-line rounded-xl bg-slate-800 px-4 py-3">
               {contact.notes}
             </p>
           </div>
         )}
 
         {/* Meta */}
-        <p className="text-xs text-ink-soft">
+        <p className="text-xs text-slate-400">
           Added {shortDate(contact.createdAt)}{" "}
           <span className="opacity-60">({relative(contact.createdAt)})</span>
         </p>
 
         {/* Action buttons */}
-        <div className="flex gap-3 pt-2 border-t border-line">
+        <div className="flex gap-3 pt-2 border-t border-slate-800">
           <Button variant="outline" className="flex-1" onClick={onEdit}>
             <Pencil className="h-4 w-4" /> Edit
           </Button>
@@ -849,8 +838,8 @@ function ContactDrawer({ open, contact, onClose, onEdit, onDelete }) {
 function DrawerRow({ icon, label, children }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <span className="text-ink-soft shrink-0">{icon}</span>
-      <span className="text-xs text-ink-soft w-16 shrink-0">{label}</span>
+      <span className="text-slate-400 shrink-0">{icon}</span>
+      <span className="text-xs text-slate-400 w-16 shrink-0">{label}</span>
       <span className="text-sm min-w-0">{children}</span>
     </div>
   );
@@ -977,14 +966,14 @@ function ContactFormDialog({ open, contact, onClose, onSaved }) {
         {/* Tags — comma-separated */}
         <Field label="Tags" error={errors.tags?.message}>
           <div className="relative">
-            <Tag className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+            <Tag className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               {...register("tags")}
               placeholder="e.g. client, vip, partner"
               className="pl-10"
             />
           </div>
-          <p className="mt-1 text-xs text-ink-soft">
+          <p className="mt-1 text-xs text-slate-400">
             Separate multiple tags with commas.
           </p>
         </Field>
@@ -999,15 +988,15 @@ function ContactFormDialog({ open, contact, onClose, onSaved }) {
         </Field>
 
         {/* Favorite toggle */}
-        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-line px-4 py-3 transition hover:bg-surface-muted select-none">
+        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-800 px-4 py-3 transition hover:bg-slate-800 select-none">
           <input
             type="checkbox"
             {...register("favorite")}
             className="h-4 w-4 rounded accent-brand-600"
           />
           <div>
-            <p className="text-sm font-medium text-ink">Mark as favorite</p>
-            <p className="text-xs text-ink-soft">
+            <p className="text-sm font-medium text-slate-50">Mark as favorite</p>
+            <p className="text-xs text-slate-400">
               Starred contacts appear highlighted in your grid.
             </p>
           </div>

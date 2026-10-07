@@ -1,54 +1,57 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
-   Quixotic CRM — design tokens (Tailwind v4 @theme)
-   A muted "fintech sage" palette inspired by the reference UI:
-   soft gray canvas, white cards, forest-green brand accent.
+   NTP CRM — Dark theme tokens
+   Near-black canvas with a faint green-teal cast, flat raised
+   panels separated by hairlines, one restrained teal accent.
+   The slate + indigo scales are remapped here so every existing
+   utility class in the app resolves to this palette.
    ───────────────────────────────────────────────────────────── */
 @theme {
-  /* Brand sky-blue scale */
-  --color-brand-50: #f0f9ff;
-  --color-brand-100: #e0f2fe;
-  --color-brand-200: #bae6fd;
-  --color-brand-300: #7dd3fc;
-  --color-brand-400: #38bdf8;
-  --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-700: #0369a1;
-  --color-brand-800: #075985;
-  --color-brand-900: #0c4a6e;
+  /* Neutral scale (dark-first, slightly cool/green) */
+  --color-slate-50:  #e8eceb;
+  --color-slate-100: #d9dfde;
+  --color-slate-200: #c0c8c6;
+  --color-slate-300: #a3adab;
+  --color-slate-400: #86918f;
+  --color-slate-500: #66716f;
+  --color-slate-600: #3a4443;
+  --color-slate-700: #262e2d;
+  --color-slate-800: #1b2221;
+  --color-slate-900: #121817;
+  --color-slate-950: #0a0e0d;
 
-  /* Semantic surfaces — white canvas, cards defined by a hairline + shadow */
-  --color-canvas: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-ink: #0f172a;
-  --color-ink-soft: #64748b;
-  --color-line: #e8eef3;
+  /* Accent: muted teal (replaces indigo everywhere) */
+  --color-indigo-300: #7fe0cf;
+  --color-indigo-400: #4fd1bb;
+  --color-indigo-500: #2fb8a2;
+  --color-indigo-600: #1f9c88;
+  --color-indigo-700: #187d6d;
 
-  /* Typography */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Sora", "Inter", system-ui, sans-serif;
+  --color-brand-300: #7fe0cf;
+  --color-brand-400: #4fd1bb;
+  --color-brand-500: #2fb8a2;
+  --color-brand-600: #1f9c88;
+  --color-brand-700: #187d6d;
 
-  /* Radii & shadows — soft, rounded SaaS feel */
+  /* Semantic tokens */
+  --color-canvas: #080b0b;
+  --color-panel: #101515;
+  --color-panel-2: #151b1b;
+  --color-hair: rgba(255, 255, 255, 0.07);
+  --color-ink: #eef2f1;
+  --color-ink-soft: #86918f;
+  --color-accent: #2fb8a2;
+
+  --font-sans: "Geist", sans-serif;
+  --font-display: "Geist", sans-serif;
   --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
-  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -12px rgba(16, 24, 40, 0.12);
-  --shadow-soft: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-pop: 0 12px 40px -12px rgba(16, 24, 40, 0.25);
+  --radius-2xl: 1.25rem;
 }
 
-/* Base resets ─────────────────────────────────────────────── */
-* {
-  border-color: var(--color-line);
-}
+* { border-color: var(--color-hair); }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+html, body, #root { height: 100%; }
 
 body {
   margin: 0;
@@ -57,65 +60,70 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
 }
 
-/* Headings use the display font for a more premium, branded feel */
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
+h1, h2, h3, h4 { letter-spacing: -0.02em; }
+
+::selection { background: rgba(47, 184, 162, 0.35); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #262e2d; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4443; }
+
+
+/* Checkboxes — dark, teal when checked */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+input[type="checkbox"]:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+input[type="checkbox"]:checked,
+input[type="checkbox"]:indeterminate {
+  background-color: #2dd4bf;
+  border-color: #2dd4bf;
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  width: 0.28rem;
+  height: 0.5rem;
+  border: solid #0a0e0d;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+input[type="checkbox"]:indeterminate::after {
+  content: "";
+  width: 0.5rem;
+  height: 2px;
+  background: #0a0e0d;
+}
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid rgba(45, 212, 191, 0.5);
+  outline-offset: 2px;
 }
 
-/* Custom slim scrollbars to match the polished aesthetic */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-thumb {
-  background: #d4d8d5;
-  border-radius: 999px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #b9bfba;
-  background-clip: content-box;
-}
+/* Native controls (date pickers, selects) render dark */
+:root { color-scheme: dark; }
 
-/* Reusable utility layer */
 @layer utilities {
-  .card {
-    background: var(--color-surface);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-card);
-  }
-  /* Sky-blue brand gradient used for primary surfaces (buttons, CTAs, hero). */
-  .brand-gradient {
-    background-image: linear-gradient(
-      135deg,
-      var(--color-brand-400),
-      var(--color-brand-600)
-    );
-  }
-  .brand-gradient-hover:hover {
-    background-image: linear-gradient(
-      135deg,
-      var(--color-brand-500),
-      var(--color-brand-700)
-    );
-  }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  .animate-fade-up {
-    animation: fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
+  .animate-fade-up { animation: fade-up 0.18s cubic-bezier(0.16, 1, 0.3, 1) both; }
 }

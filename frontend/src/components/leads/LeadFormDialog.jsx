@@ -52,61 +52,61 @@ export function LeadFormDialog({ open, onClose, lead, onSaved }) {
     <Dialog
       open={open}
       onClose={onClose}
-      title={editing ? "Edit lead" : "New lead"}
-      description={editing ? "Update this lead's details." : "Add a lead to your pipeline."}
+      title={editing ? "Edit Deal Profile" : "Create New Deal"}
+      description={editing ? "Update contact details, deal valuation, or pipeline stage." : "Add a qualified opportunity into your pipeline."}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Name" error={errors.name?.message} className="col-span-2">
+          <Field label="Contact Full Name" error={errors.name?.message} className="col-span-2">
             <Input
-              placeholder="Contact name"
+              placeholder="e.g. Sarah Jenkins"
               {...register("name", { required: "Name is required" })}
             />
           </Field>
-          <Field label="Company">
-            <Input placeholder="Company" {...register("company")} />
+          <Field label="Company / Account">
+            <Input placeholder="Acme Global" {...register("company")} />
           </Field>
-          <Field label="Email">
-            <Input type="email" placeholder="email@company.com" {...register("email")} />
+          <Field label="Email Address">
+            <Input type="email" placeholder="sarah@acme.com" {...register("email")} />
           </Field>
-          <Field label="Phone">
-            <Input placeholder="+1 555 0100" {...register("phone")} />
+          <Field label="Phone Number">
+            <Input placeholder="+1 (555) 012-3456" {...register("phone")} />
           </Field>
-          <Field label="Deal value (USD)">
-            <Input type="number" min="0" placeholder="0" {...register("value")} />
+          <Field label="Deal Value (USD)">
+            <Input type="number" min="0" placeholder="10000" {...register("value")} />
           </Field>
-          <Field label="Stage">
+          <Field label="Pipeline Stage">
             <Select {...register("status")}>
               {LEAD_STAGES.map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </Select>
           </Field>
-          <Field label="Priority">
+          <Field label="Priority Level">
             <Select {...register("priority")}>
               {LEAD_PRIORITIES.map((p) => (
                 <option key={p}>{p}</option>
               ))}
             </Select>
           </Field>
-          <Field label="Source" className="col-span-2">
+          <Field label="Acquisition Source" className="col-span-2">
             <Select {...register("source")}>
               {LEAD_SOURCES.map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </Select>
           </Field>
-          <Field label="Notes" className="col-span-2">
-            <Textarea placeholder="Context, next steps…" {...register("notes")} />
+          <Field label="Internal Notes & Context" className="col-span-2">
+            <Textarea placeholder="Background, requirements, initial scope, or next milestones…" rows={3} {...register("notes")} />
           </Field>
         </div>
 
-        <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="outline" onClick={onClose}>
+        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+          <Button type="button" variant="outline" size="sm" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" loading={isSubmitting}>
-            {editing ? "Save changes" : "Create lead"}
+          <Button type="submit" size="sm" loading={isSubmitting}>
+            {editing ? "Save Changes" : "Create Opportunity"}
           </Button>
         </div>
       </form>

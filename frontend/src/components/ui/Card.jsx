@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-/* Card primitives — the building block of the entire dashboard. */
+/* Card primitives — clean, high-contrast, structured containers */
 
 export function Card({ className, ...props }) {
   return (
     <div
       className={cn(
-        "bg-surface rounded-3xl border border-line shadow-[var(--shadow-card)]",
+        "rounded-2xl border border-white/[0.07] bg-panel text-slate-100",
         className
       )}
       {...props}
@@ -19,7 +19,7 @@ export function Card({ className, ...props }) {
 export function CardHeader({ className, ...props }) {
   return (
     <div
-      className={cn("flex items-start justify-between gap-4 p-6 pb-0", className)}
+      className={cn("flex items-start justify-between gap-4 p-5 pb-0", className)}
       {...props}
     />
   );
@@ -27,24 +27,22 @@ export function CardHeader({ className, ...props }) {
 
 export function CardTitle({ className, ...props }) {
   return (
-    <h3 className={cn("text-base font-semibold text-ink", className)} {...props} />
+    <h3 className={cn("text-sm font-semibold text-white tracking-tight", className)} {...props} />
   );
 }
 
 export function CardDescription({ className, ...props }) {
   return (
-    <p className={cn("text-sm text-ink-soft mt-0.5", className)} {...props} />
+    <p className={cn("text-xs text-slate-400 mt-0.5", className)} {...props} />
   );
 }
 
 export function CardContent({ className, ...props }) {
-  return <div className={cn("p-6", className)} {...props} />;
+  return <div className={cn("p-5", className)} {...props} />;
 }
 
 /**
- * Reference-style card heading: optional leading icon, title + subtitle, and a
- * trailing circular action (↗ link, a custom node, or a toggle). Matches the
- * card headers throughout the inspiration dashboard.
+ * Clean card header: title, subtitle, optional leading icon, and optional trailing action.
  */
 export function SectionHeading({
   icon: Icon,
@@ -55,26 +53,26 @@ export function SectionHeading({
   className,
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-4", className)}>
-      <div className="flex items-center gap-3">
+    <div className={cn("flex items-center justify-between gap-3 pb-4", className)}>
+      <div className="flex items-center gap-2.5">
         {Icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-muted text-ink-soft">
-            <Icon className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-slate-300">
+            <Icon className="h-4 w-4" />
           </div>
         )}
         <div>
-          <h3 className="text-base font-semibold text-ink">{title}</h3>
-          {subtitle && <p className="text-sm text-ink-soft">{subtitle}</p>}
+          <h3 className="text-sm font-semibold text-white tracking-tight">{title}</h3>
+          {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
         </div>
       </div>
       {action ??
         (to ? (
           <Link
             to={to}
-            aria-label="Open"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink-soft transition hover:bg-surface-muted hover:text-ink active:scale-95"
+            aria-label="View all"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.08] text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
           >
-            <ArrowUpRight className="h-[18px] w-[18px]" />
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         ) : null)}
     </div>

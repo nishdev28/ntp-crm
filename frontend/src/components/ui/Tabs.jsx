@@ -1,14 +1,13 @@
 import { cn } from "../../lib/utils";
 
 /**
- * Segmented pill tabs (matches the "Monthly / Annually" toggle in the reference).
- * Controlled: pass `value`, `onChange`, and an array of {value,label} tabs.
+ * Segmented control tabs (e.g., Monthly / Annually, status filter).
  */
 export function Tabs({ tabs, value, onChange, className }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-surface-muted p-1",
+        "inline-flex items-center gap-0.5 rounded-xl bg-white/[0.03] p-0.5 border border-white/[0.07]",
         className
       )}
     >
@@ -17,12 +16,13 @@ export function Tabs({ tabs, value, onChange, className }) {
         return (
           <button
             key={t.value}
+            type="button"
             onClick={() => onChange(t.value)}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
+              "rounded-lg px-3 py-1 text-xs font-medium transition-colors cursor-pointer",
               active
-                ? "bg-brand-600 text-white shadow-sm"
-                : "text-ink-soft hover:text-ink"
+                ? "bg-white/[0.08] text-white"
+                : "text-slate-400 hover:text-slate-200"
             )}
           >
             {t.label}

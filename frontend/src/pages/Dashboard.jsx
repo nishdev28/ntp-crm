@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  CreditCard,
   CalendarRange,
   Plus,
   ArrowUpRight,
-  CheckCircle2,
   Target,
   Layers,
   PieChart as PieIcon,
@@ -14,6 +12,10 @@ import {
   Clock,
   AlertTriangle,
   Building2,
+  DollarSign,
+  TrendingUp,
+  Briefcase,
+  ChevronRight,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -23,14 +25,11 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  AreaChart,
-  Area,
   Cell,
   PieChart,
   Pie,
 } from "recharts";
-import { format, isPast } from "date-fns";
-import { HeroCard } from "../components/dashboard/HeroCard";
+import { format, isPast, isToday } from "date-fns";
 import { AiInsightsCard } from "../components/ai/AiInsightsCard";
 import {
   Card,
@@ -39,6 +38,7 @@ import {
   Tabs,
   Skeleton,
   Avatar,
+  Button,
 } from "../components/ui";
 import { analyticsApi, contactsApi, leadsApi, tasksApi } from "../lib/services";
 import { currency, shortDate, timeOf } from "../lib/format";
@@ -46,8 +46,8 @@ import { STAGE_STYLES, PRIORITY_STYLES } from "../lib/constants";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
 
-/* Donut palette — sky-blue family used for the "Leads by Source" chart. */
-const SOURCE_COLORS = ["#0ea5e9", "#38bdf8", "#0369a1", "#7dd3fc", "#0284c7", "#bae6fd"];
+/* Chart palette */
+const SOURCE_COLORS = ["#2dd4bf", "#38bdf8", "#a3e635", "#fbbf24", "#fb7185", "#66716f"];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -67,78 +67,59 @@ export default function Dashboard() {
   if (data === null) return <DashboardSkeleton />;
   const stats = data?.stats || {};
 
-  // A friendly trailing date-range label for the header pill.
+  // Trailing date-range label for the header
   const today = new Date();
   const start = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-  const rangeLabel = `${format(start, "dd MMM")} – ${format(today, "dd MMM, yyyy")}`;
+  const rangeLabel = `${format(start, "MMM d")} – ${format(today, "MMM d, yyyy")}`;
 
   return (
     <div className="space-y-6">
-      {/* Title row */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-[2.5rem]">
-          Welcome Back, <span className="text-ink-soft">{user?.name?.split(" ")[0]}</span>
-        </h1>
-        <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-2 rounded-full bg-surface px-4 py-2.5 text-sm font-medium text-ink-soft shadow-[var(--shadow-soft)] sm:flex">
-            <CalendarRange className="h-4 w-4" />
-            {rangeLabel}
+      {/* Page Title & Top Actions */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-1">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
+            Welcome back, {user?.name?.split(" ")[0]}
+          </h1>
+          <p className="mt-0.5 text-xs sm:text-sm text-slate-400">
+            Deals, revenue and follow-ups at a glance.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <div className="hidden items-center gap-1.5 rounded-xl border border-white/8 px-3 py-2 text-xs text-slate-300 sm:flex">
+            <CalendarRange className="h-3.5 w-3.5 text-slate-400" />
+            <span>{rangeLabel}</span>
           </div>
           <Link
             to="/leads"
-            className="brand-gradient brand-gradient-hover inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold text-white shadow-sm transition"
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-teal-400 px-3.5 text-xs font-semibold text-slate-950 hover:bg-teal-300 transition-colors"
           >
-            <Plus className="h-4 w-4" /> Add New Lead
+            <Plus className="h-4 w-4" />
+            <span>New Lead</span>
           </Link>
         </div>
       </div>
 
-      {/* Balanced 3-column composition — cards distributed so the columns end
-          at roughly the same height, leaving no large vertical gaps. */}
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-        {/* ── Left column ───────────────────────────────── */}
-        <div className="space-y-5 lg:col-span-3">
-          <HeroCard value={stats.pipelineValue} />
+      {/* KPI row */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Kpi icon={Layers} label="Total pipeline" value={currency(stats.pipelineValue)}
+          note={`${stats.totalLeads ?? 0} deals tracked`} />
+        <Kpi icon={DollarSign} label="Revenue won" value={currency(stats.revenueWon)}
+          note="Closed-won deals" />
+        <Kpi icon={Target} label="Win rate" value={`${stats.conversionRate ?? 0}%`}
+          note="Qualified to won" />
+        <Kpi icon={CalendarClock} label="Open follow-ups" value={stats.openTasks ?? 0}
+          note="Scheduled tasks" />
+      </div>
 
+      {/* Main Content Composition (8 cols + 4 cols) */}
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        {/* ── Left Column (8 cols): Charts & Tables ── */}
+        <div className="space-y-6 lg:col-span-8">
+          {/* Pipeline Engagement Chart */}
           <Card className="p-5">
-            <p className="text-sm text-ink-soft">Weekly Revenue</p>
-            <div className="mt-2 flex items-end justify-between gap-2">
-              <p className="font-display text-2xl font-bold text-ink">
-                {currency(stats.revenueWon, { compact: true })}
-              </p>
-              <Badge className="bg-brand-50 text-brand-700">
-                <ArrowUpRight className="h-3 w-3" /> 12.8%
-              </Badge>
-            </div>
-          </Card>
-
-          {/* Conversion stat */}
-          <Card className="p-6">
-            <SectionHeading icon={Target} title="Conversion" subtitle="Win rate" />
-            <div className="mt-4 flex items-end gap-2">
-              <p className="font-display text-3xl font-bold text-ink">
-                {stats.conversionRate ?? 0}
-                <span className="text-xl text-ink-soft">%</span>
-              </p>
-              <Badge className="mb-1 bg-brand-50 text-brand-700">
-                <ArrowUpRight className="h-3 w-3" /> 4.1%
-              </Badge>
-            </div>
-            <p className="mt-1 text-sm text-ink-soft">
-              {stats.totalLeads ?? 0} leads · {stats.openTasks ?? 0} open tasks
-            </p>
-          </Card>
-
-          <UpcomingTasks tasks={tasks} />
-          <TopContactsCard contacts={contacts} />
-        </div>
-
-        {/* ── Center column ─────────────────────────────── */}
-        <div className="space-y-5 lg:col-span-6">
-          <Card className="p-6">
             <SectionHeading
-              icon={CreditCard}
-              title="Pipeline Engagement"
+              icon={TrendingUp}
+              title="Pipeline velocity"
               subtitle="New leads per month"
               action={
                 <Tabs
@@ -151,53 +132,40 @@ export default function Dashboard() {
                 />
               }
             />
-            <div className="mt-4">
+            <div className="mt-5">
               <EngagementChart trend={data?.trend || []} />
             </div>
           </Card>
 
-          <Card className="p-6">
+          {/* Pipeline by stage Breakdown */}
+          <PipelineByStage pipeline={data?.pipeline || []} />
+
+          {/* Recent activity Table */}
+          <Card className="p-5">
             <SectionHeading
-              title="Lead Activity"
-              subtitle="Recent lead movements"
+              icon={Briefcase}
+              title="Recent activity"
+              subtitle="Latest stage changes"
               to="/leads"
             />
-            <div className="mt-4">
+            <div className="mt-3">
               <ActivityTable leads={data?.recentLeads || []} />
             </div>
           </Card>
-
-          <PipelineByStage pipeline={data?.pipeline || []} />
         </div>
 
-        {/* ── Right column ──────────────────────────────── */}
-        <div className="space-y-5 lg:col-span-3">
-          {/* Revenue / balance card */}
-          <Card className="p-6">
-            <SectionHeading title="Revenue Goal" subtitle="Closed-won total" to="/pipeline" />
-            <p className="mt-4 text-center text-sm text-ink-soft">Total Won</p>
-            <p className="text-center font-display text-3xl font-bold tracking-tight text-ink">
-              {currency(stats.revenueWon)}
-            </p>
-            <BalanceChart trend={data?.trend || []} />
-            <div className="mt-4 flex items-center gap-2">
-              <Link
-                to="/leads"
-                className="brand-gradient brand-gradient-hover inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full text-sm font-semibold text-white transition"
-              >
-                <Plus className="h-4 w-4" /> Add Lead
-              </Link>
-              <Link
-                to="/tasks"
-                className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-line text-sm font-medium text-ink transition hover:bg-surface-muted"
-              >
-                <CheckCircle2 className="h-4 w-4" /> Task
-              </Link>
-            </div>
-          </Card>
+        {/* ── Right Column (4 cols): Action Items & Insights ── */}
+        <div className="space-y-6 lg:col-span-4">
+          {/* Upcoming Follow-ups */}
+          <UpcomingTasks tasks={tasks} />
 
+          {/* AI Pipeline Intelligence */}
           <AiInsightsCard />
+
+          {/* Leads by Source */}
           <LeadsBySource leads={leads} />
+
+          {/* Top Opportunities */}
           <TopDeals leads={leads} />
         </div>
       </div>
@@ -205,37 +173,39 @@ export default function Dashboard() {
   );
 }
 
-/* ── Pipeline by stage (funnel-style breakdown) ─────────────────────── */
-function PipelineByStage({ pipeline, className }) {
+/* ── Pipeline by stage ──────────────────────────────────────────────── */
+function PipelineByStage({ pipeline }) {
   const maxValue = Math.max(...pipeline.map((s) => s.value), 1);
   const totalValue = pipeline.reduce((sum, s) => sum + s.value, 0);
 
   return (
-    <Card className={cn("p-6", className)}>
+    <Card className="p-5">
       <SectionHeading
         icon={Layers}
-        title="Pipeline by Stage"
-        subtitle="Deal value across each stage"
+        title="Pipeline by stage"
+        subtitle="Deal value by stage"
         to="/pipeline"
       />
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-3.5">
         {pipeline.map((s) => {
           const style = STAGE_STYLES[s.stage] || STAGE_STYLES.New;
           const pct = totalValue ? Math.round((s.value / totalValue) * 100) : 0;
           return (
-            <div key={s.stage}>
-              <div className="mb-1.5 flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 font-medium text-ink">
-                  <span className={cn("h-2.5 w-2.5 rounded-full", style.dot)} />
+            <div key={s.stage} className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-2 font-medium text-slate-100">
+                  <span className={cn("h-2 w-2 rounded-full", style.dot)} />
                   {s.stage}
-                  <span className="text-ink-soft">· {s.count}</span>
+                  <span className="text-slate-400">({s.count})</span>
                 </span>
-                <span className="font-semibold text-ink">
+                <span className="font-semibold text-slate-50 tabular-nums">
                   {currency(s.value, { compact: true })}
-                  <span className="ml-1.5 text-xs font-normal text-ink-soft">{pct}%</span>
+                  <span className="ml-1 text-[11px] font-normal text-slate-400">
+                    {pct}%
+                  </span>
                 </span>
               </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-surface-muted">
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
                   className={cn("h-full rounded-full transition-all", style.bar)}
                   style={{ width: `${Math.max((s.value / maxValue) * 100, 2)}%` }}
@@ -245,16 +215,15 @@ function PipelineByStage({ pipeline, className }) {
           );
         })}
         {pipeline.length === 0 && (
-          <p className="py-6 text-center text-sm text-ink-soft">No pipeline data yet.</p>
+          <p className="py-6 text-center text-xs text-slate-500">No active pipeline data available.</p>
         )}
       </div>
     </Card>
   );
 }
 
-/* ── Leads by source (donut chart) ──────────────────────────────────── */
+/* ── Leads by source (clean Donut) ─────────────────────────────────── */
 function LeadsBySource({ leads }) {
-  // Group leads by their source field.
   const grouped = leads.reduce((acc, l) => {
     const key = l.source || "Other";
     acc[key] = (acc[key] || 0) + 1;
@@ -263,20 +232,20 @@ function LeadsBySource({ leads }) {
   const dataset = Object.entries(grouped).map(([name, value]) => ({ name, value }));
 
   return (
-    <Card className="p-6">
-      <SectionHeading icon={PieIcon} title="Leads by Source" subtitle="Where leads come from" />
+    <Card className="p-5">
+      <SectionHeading icon={PieIcon} title="Lead sources" subtitle="Where leads come from" />
       {dataset.length === 0 ? (
-        <p className="py-10 text-center text-sm text-ink-soft">No leads yet.</p>
+        <p className="py-8 text-center text-xs text-slate-500">No lead sources recorded.</p>
       ) : (
-        <div className="mt-2 flex items-center gap-4">
-          <div className="relative h-36 w-36 shrink-0">
+        <div className="mt-3 flex items-center gap-4">
+          <div className="relative h-32 w-32 shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={dataset}
                   dataKey="value"
-                  innerRadius={44}
-                  outerRadius={66}
+                  innerRadius={38}
+                  outerRadius={56}
                   paddingAngle={2}
                   stroke="none"
                 >
@@ -288,21 +257,21 @@ function LeadsBySource({ leads }) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-xl font-bold text-ink">{leads.length}</span>
-              <span className="text-[11px] text-ink-soft">leads</span>
+              <span className="text-lg font-semibold text-slate-50 tabular-nums">{leads.length}</span>
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">leads</span>
             </div>
           </div>
           <ul className="flex-1 space-y-1.5">
             {dataset.map((d, i) => (
-              <li key={d.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 text-ink-soft">
+              <li key={d.name} className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-2 text-slate-300 truncate">
                   <span
-                    className="h-2.5 w-2.5 rounded-full"
+                    className="h-2 w-2 rounded-full shrink-0"
                     style={{ background: SOURCE_COLORS[i % SOURCE_COLORS.length] }}
                   />
-                  {d.name}
+                  <span className="truncate">{d.name}</span>
                 </span>
-                <span className="font-medium text-ink">{d.value}</span>
+                <span className="font-semibold text-slate-50 tabular-nums ml-2">{d.value}</span>
               </li>
             ))}
           </ul>
@@ -312,7 +281,7 @@ function LeadsBySource({ leads }) {
   );
 }
 
-/* ── Upcoming follow-ups (next due tasks) ───────────────────────────── */
+/* ── Upcoming Follow-ups ───────────────────────────────────────────── */
 function UpcomingTasks({ tasks }) {
   const upcoming = tasks
     .filter((t) => t.status !== "Completed")
@@ -324,37 +293,40 @@ function UpcomingTasks({ tasks }) {
     .slice(0, 4);
 
   return (
-    <Card className="flex flex-col p-6">
+    <Card className="p-5">
       <SectionHeading
         icon={CalendarClock}
-        title="Upcoming Follow-ups"
-        subtitle="Don't let these slip"
+        title="Follow-ups"
+        subtitle="Due soon"
         to="/tasks"
       />
       {upcoming.length === 0 ? (
-        <p className="py-8 text-center text-sm text-ink-soft">You're all caught up 🎉</p>
+        <p className="py-8 text-center text-xs text-slate-400">All follow-ups completed.</p>
       ) : (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-3.5 space-y-2.5">
           {upcoming.map((t) => {
-            const overdue = t.dueDate && isPast(new Date(t.dueDate));
+            const overdue = t.dueDate && isPast(new Date(t.dueDate)) && !isToday(new Date(t.dueDate));
             return (
-              <li key={t._id} className="flex items-start gap-3">
-                <span
+              <li
+                key={t._id}
+                className="flex items-start gap-2.5 rounded-lg border border-white/[0.07] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
+              >
+                <div
                   className={cn(
-                    "mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
-                    overdue ? "bg-rose-50 text-rose-600" : "bg-brand-50 text-brand-600"
+                    "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md",
+                    overdue ? "bg-rose-400/10 text-rose-300" : "bg-white/[0.06] text-slate-300"
                   )}
                 >
                   {overdue ? (
-                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <AlertTriangle className="h-3 w-3" />
                   ) : (
-                    <Clock className="h-3.5 w-3.5" />
+                    <Clock className="h-3 w-3" />
                   )}
-                </span>
+                </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-ink">{t.title}</p>
-                  <p className={cn("text-xs", overdue ? "text-rose-600" : "text-ink-soft")}>
-                    {t.dueDate ? shortDate(t.dueDate) : "No due date"}
+                  <p className="truncate text-xs font-semibold text-slate-50">{t.title}</p>
+                  <p className={cn("text-[11px]", overdue ? "text-rose-300 font-medium" : "text-slate-500")}>
+                    {t.dueDate ? shortDate(t.dueDate) : "No date"}
                     {t.relatedLead?.name ? ` · ${t.relatedLead.name}` : ""}
                   </p>
                 </div>
@@ -368,7 +340,7 @@ function UpcomingTasks({ tasks }) {
   );
 }
 
-/* ── Top open deals (highest-value active leads) ────────────────────── */
+/* ── Top Deals ─────────────────────────────────────────────────────── */
 function TopDeals({ leads }) {
   const deals = [...leads]
     .filter((l) => l.status !== "Won" && l.status !== "Lost")
@@ -376,30 +348,35 @@ function TopDeals({ leads }) {
     .slice(0, 5);
 
   return (
-    <Card className="flex flex-col p-6">
-      <SectionHeading icon={Trophy} title="Top Open Deals" subtitle="Biggest active opportunities" to="/leads" />
+    <Card className="p-5">
+      <SectionHeading icon={Trophy} title="Top open deals" subtitle="Highest value, still open" to="/leads" />
       {deals.length === 0 ? (
-        <p className="py-8 text-center text-sm text-ink-soft">No open deals yet.</p>
+        <p className="py-8 text-center text-xs text-slate-500">No active opportunities.</p>
       ) : (
-        <ul className="mt-4 space-y-2.5">
+        <ul className="mt-3 space-y-2">
           {deals.map((l, i) => {
             const style = STAGE_STYLES[l.status] || STAGE_STYLES.New;
             return (
-              <li key={l._id} className="flex items-center gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-muted text-xs font-semibold text-ink-soft">
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-ink">{l.name}</p>
-                  <p className="flex items-center gap-1 truncate text-xs text-ink-soft">
-                    <Building2 className="h-3 w-3" /> {l.company || "—"}
-                  </p>
+              <li
+                key={l._id}
+                className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-white/[0.04]"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[11px] font-semibold text-slate-400">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-slate-50">{l.name}</p>
+                    <p className="flex items-center gap-1 truncate text-[11px] text-slate-400">
+                      <Building2 className="h-3 w-3 shrink-0" /> {l.company || "—"}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-ink">
+                <div className="text-right shrink-0 ml-3">
+                  <p className="text-xs font-semibold text-slate-50 tabular-nums">
                     {currency(l.value, { compact: true })}
                   </p>
-                  <span className={cn("text-[11px] font-medium", style.badge, "bg-transparent px-0")}>
+                  <span className={cn("text-[10px] font-medium", style.badge)}>
                     {l.status}
                   </span>
                 </div>
@@ -412,52 +389,30 @@ function TopDeals({ leads }) {
   );
 }
 
-/* ── Engagement bar chart with a highlighted peak + floating bubble ──── */
+/* ── Engagement Bar Chart ──────────────────────────────────────────── */
 function EngagementChart({ trend }) {
-  const counts = trend.map((t) => t.leads);
-  const max = Math.max(...counts, 1);
-  const maxIndex = counts.indexOf(max);
-  const prev = maxIndex > 0 ? counts[maxIndex - 1] : 0;
-  const growth = prev > 0 ? Math.round(((max - prev) / prev) * 1000) / 10 : 17.8;
-
-  // Custom label: render a rounded "+x%" bubble above the tallest bar only.
-  const renderPeak = (props) => {
-    const { x, y, width, index } = props;
-    if (index !== maxIndex) return null;
-    const cx = x + width / 2;
-    return (
-      <g>
-        <circle cx={cx} cy={y} r={5} fill="#0369a1" stroke="#fff" strokeWidth={2} />
-        <rect x={cx - 26} y={y - 34} width={52} height={22} rx={11} fill="#0369a1" />
-        <text x={cx} y={y - 19} textAnchor="middle" fontSize="11" fontWeight="700" fill="#fff">
-          +{growth}%
-        </text>
-      </g>
-    );
-  };
-
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <BarChart data={trend} barCategoryGap="28%" margin={{ top: 30 }}>
-        <CartesianGrid vertical={false} stroke="#e8eef3" strokeDasharray="4 4" />
+    <ResponsiveContainer width="100%" height={260}>
+      <BarChart data={trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+        <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
         <XAxis
           dataKey="month"
           axisLine={false}
           tickLine={false}
-          tick={{ fill: "#64748b", fontSize: 12 }}
+          tick={{ fill: "#66716f", fontSize: 11 }}
           dy={6}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: "#64748b", fontSize: 12 }}
-          width={30}
+          tick={{ fill: "#66716f", fontSize: 11 }}
+          width={40}
           tickFormatter={(v) => (v >= 1000 ? `${v / 1000}k` : v)}
         />
-        <Tooltip cursor={{ fill: "#f1f5f9" }} content={<ChartTooltip unit=" leads" />} />
-        <Bar dataKey="leads" radius={[14, 14, 14, 14]} maxBarSize={42} label={renderPeak}>
-          {trend.map((t, i) => (
-            <Cell key={i} fill={i === maxIndex ? "#0369a1" : "#bae6fd"} />
+        <Tooltip cursor={{ fill: "rgba(255,255,255,0.04)" }} content={<ChartTooltip unit=" leads" />} />
+        <Bar dataKey="leads" radius={[4, 4, 0, 0]} maxBarSize={32}>
+          {trend.map((_, i) => (
+            <Cell key={i} fill={i === trend.length - 1 ? "#2dd4bf" : "rgba(45,212,191,0.35)"} />
           ))}
         </Bar>
       </BarChart>
@@ -465,29 +420,12 @@ function EngagementChart({ trend }) {
   );
 }
 
-function BalanceChart({ trend }) {
-  return (
-    <ResponsiveContainer width="100%" height={120}>
-      <AreaChart data={trend} margin={{ top: 14, right: 0, left: 0, bottom: 0 }}>
-        <defs>
-          <linearGradient id="balance" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.3} />
-            <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Tooltip content={<ChartTooltip prefix="$" />} />
-        <Area type="monotone" dataKey="won" stroke="#0284c7" strokeWidth={2.5} fill="url(#balance)" />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
-
 function ChartTooltip({ active, payload, label, prefix = "", unit = "" }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-line bg-surface px-3 py-2 shadow-[var(--shadow-pop)]">
-      <p className="text-xs font-medium text-ink-soft">{label}</p>
-      <p className="text-sm font-semibold text-ink">
+    <div className="rounded-lg border border-white/10 bg-panel-2 px-3 py-2 shadow-xl shadow-black/50">
+      <p className="text-[11px] text-slate-400">{label}</p>
+      <p className="text-xs font-semibold text-slate-50 tabular-nums">
         {prefix}
         {Number(payload[0].value).toLocaleString()}
         {unit}
@@ -496,52 +434,49 @@ function ChartTooltip({ active, payload, label, prefix = "", unit = "" }) {
   );
 }
 
-/* ── Recent activity table (Payment History style) ──────────────────── */
+/* ── Activity Table ────────────────────────────────────────────────── */
 function ActivityTable({ leads }) {
   if (!leads.length)
-    return <p className="py-10 text-center text-sm text-ink-soft">No recent activity yet.</p>;
+    return <p className="py-8 text-center text-xs text-slate-500">No recent activity recorded.</p>;
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-xs">
         <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-ink-soft">
-            <th className="pb-3 font-medium">Name</th>
-            <th className="pb-3 font-medium">Date</th>
-            <th className="hidden pb-3 font-medium sm:table-cell">Time</th>
-            <th className="pb-3 font-medium">Status</th>
-            <th className="pb-3 text-right font-medium">Value</th>
+          <tr className="border-b border-white/[0.07] text-left text-slate-500 font-medium">
+            <th className="pb-2.5 font-medium">Lead & Company</th>
+            <th className="pb-2.5 font-medium">Stage</th>
+            <th className="pb-2.5 text-right font-medium">Deal Value</th>
+            <th className="pb-2.5 text-right font-medium">Updated</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-white/[0.06]">
           {leads.map((l) => {
             const style = STAGE_STYLES[l.status] || STAGE_STYLES.New;
             return (
               <tr
                 key={l.id}
-                className="border-t border-line transition hover:bg-surface-muted/50"
+                className="transition-colors hover:bg-white/[0.02]"
               >
-                <td className="py-3.5">
-                  <div className="flex items-center gap-3">
+                <td className="py-3">
+                  <div className="flex items-center gap-2.5">
                     <Avatar name={l.name} size="sm" />
                     <div>
-                      <p className="font-medium text-ink">{l.name}</p>
-                      <p className="text-xs text-ink-soft">{l.company || "—"}</p>
+                      <p className="font-semibold text-slate-50">{l.name}</p>
+                      <p className="text-[11px] text-slate-400">{l.company || "—"}</p>
                     </div>
                   </div>
                 </td>
-                <td className="py-3.5 text-ink-soft">{shortDate(l.updatedAt)}</td>
-                <td className="hidden py-3.5 text-ink-soft sm:table-cell">
-                  {timeOf(l.updatedAt)}
-                </td>
-                <td className="py-3.5">
-                  <span className="inline-flex items-center gap-1.5 text-sm text-ink">
-                    <span className={cn("h-1.5 w-1.5 rounded-full", style.dot)} />
+                <td className="py-3">
+                  <Badge className={style.badge} dot={style.dot}>
                     {l.status}
-                  </span>
+                  </Badge>
                 </td>
-                <td className="py-3.5 text-right font-semibold text-ink">
+                <td className="py-3 text-right font-semibold text-slate-50 tabular-nums">
                   {currency(l.value)}
+                </td>
+                <td className="py-3 text-right text-slate-500 tabular-nums">
+                  {shortDate(l.updatedAt)}
                 </td>
               </tr>
             );
@@ -552,42 +487,19 @@ function ActivityTable({ leads }) {
   );
 }
 
-/* ── Top contacts (avatar stack — the "Mandatory Payments" slot) ─────── */
-function TopContactsCard({ contacts }) {
-  const top = contacts.slice(0, 4);
-  const overflow = Math.max(contacts.length - top.length, 0);
-
+function Kpi({ icon: Icon, label, value, note }) {
   return (
-    <Card className="p-6">
-      <SectionHeading title="Top Contacts" subtitle="Your key relationships" to="/contacts" />
-      {contacts.length === 0 ? (
-        <p className="mt-4 text-sm text-ink-soft">No contacts yet.</p>
-      ) : (
-        <div className="mt-5 flex items-center justify-between">
-          <div className="flex -space-x-3">
-            {top.map((c) => (
-              <Avatar
-                key={c._id}
-                name={c.name}
-                src={c.avatar}
-                size="md"
-                className="ring-2 ring-surface"
-              />
-            ))}
-            {overflow > 0 && (
-              <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white ring-2 ring-surface">
-                +{overflow}
-              </div>
-            )}
-          </div>
-          <Link
-            to="/contacts"
-            className="text-sm font-medium text-brand-700 hover:underline"
-          >
-            View all
-          </Link>
-        </div>
-      )}
+    <Card className="p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-slate-400">{label}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-slate-300">
+          <Icon className="h-4 w-4" />
+        </span>
+      </div>
+      <p className="mt-4 text-[26px] font-semibold leading-none tracking-tight text-white tabular-nums">
+        {value}
+      </p>
+      <p className="mt-2 text-xs text-slate-500">{note}</p>
     </Card>
   );
 }
@@ -595,20 +507,21 @@ function TopContactsCard({ contacts }) {
 function DashboardSkeleton() {
   return (
     <div className="space-y-6">
-      <Skeleton className="h-12 w-80" />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-        <div className="space-y-5 lg:col-span-3">
-          <Skeleton className="h-64 rounded-3xl" />
-          <Skeleton className="h-24 rounded-3xl" />
+      <Skeleton className="h-8 w-64" />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Skeleton className="h-24 rounded-xl" />
+        <Skeleton className="h-24 rounded-xl" />
+        <Skeleton className="h-24 rounded-xl" />
+        <Skeleton className="h-24 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="space-y-6 lg:col-span-8">
+          <Skeleton className="h-72 rounded-xl" />
+          <Skeleton className="h-56 rounded-xl" />
         </div>
-        <div className="space-y-5 lg:col-span-6">
-          <Skeleton className="h-80 rounded-3xl" />
-          <Skeleton className="h-64 rounded-3xl" />
-        </div>
-        <div className="space-y-5 lg:col-span-3">
-          <Skeleton className="h-56 rounded-3xl" />
-          <Skeleton className="h-32 rounded-3xl" />
-          <Skeleton className="h-32 rounded-3xl" />
+        <div className="space-y-6 lg:col-span-4">
+          <Skeleton className="h-60 rounded-xl" />
+          <Skeleton className="h-60 rounded-xl" />
         </div>
       </div>
     </div>

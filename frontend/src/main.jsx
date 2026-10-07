@@ -14,7 +14,7 @@ createRoot(document.getElementById("root")).render(
         {/* Global toast notifications */}
         <Toaster
           position="top-right"
-          richColors
+          theme="dark"
           toastOptions={{ style: { borderRadius: "14px" } }}
         />
       </AuthProvider>

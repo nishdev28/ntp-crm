@@ -1,46 +1,47 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { IconRail } from "./IconRail";
-import { TopNav } from "./TopNav";
+import { Topbar } from "./Topbar";
 import { Sidebar } from "./Sidebar";
 
 /**
- * Authenticated app shell matching the reference fintech dashboard:
- *  - a floating icon-only rail on the left (desktop)
- *  - a labelled slide-in drawer on mobile
- *  - a floating top nav (brand + centered link pill + actions)
- *  - an airy, scrollable content region.
+ * Authenticated shell:
+ *  - Floating rounded sidebar on the left (drawer on mobile)
+ *  - Slim top bar with search + quick actions
+ *  - Scrollable content region on a near-black canvas
  */
 export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-canvas">
-      {/* Desktop icon rail */}
-      <div className="hidden shrink-0 pl-3 lg:flex">
-        <IconRail />
+    <div className="relative flex h-screen overflow-hidden bg-canvas text-slate-100">
+      {/* Faint teal wash at the top edge — the only decoration */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(47,184,162,0.10),transparent)]"
+      />
+
+      {/* Desktop sidebar */}
+      <div className="relative hidden shrink-0 p-3 pr-0 lg:block">
+        <Sidebar className="h-full" />
       </div>
 
-      {/* Mobile sidebar drawer */}
+      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full animate-[slidein_.25s_ease]">
-            <Sidebar onNavigate={() => setMobileOpen(false)} />
+          <div className="absolute left-0 top-0 h-full p-3 animate-fade-up">
+            <Sidebar className="h-full" onNavigate={() => setMobileOpen(false)} />
           </div>
         </div>
       )}
 
-      {/* Main column */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="px-4 pt-4 md:px-6 md:pt-5">
-          <TopNav onMenuClick={() => setMobileOpen(true)} />
-        </div>
-        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6">
-          <div className="mx-auto max-w-7xl">
+      <div className="relative flex min-w-0 flex-1 flex-col">
+        <Topbar onMenuClick={() => setMobileOpen(true)} />
+        <main className="flex-1 overflow-y-auto px-4 pb-8 pt-2 md:px-6">
+          <div className="mx-auto max-w-[1400px]">
             <Outlet />
           </div>
         </main>

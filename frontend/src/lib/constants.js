@@ -21,33 +21,46 @@ export const TASK_PRIORITIES = ["Low", "Medium", "High"];
 
 /** Tailwind class tokens for each lead stage (badge + kanban accents). */
 export const STAGE_STYLES = {
-  New: { dot: "bg-sky-500", badge: "bg-sky-50 text-sky-700", bar: "bg-sky-500" },
+  New: {
+    dot: "bg-sky-400",
+    badge: "bg-sky-400/10 text-sky-300 border-sky-400/25",
+    bar: "bg-sky-400",
+    hex: "#38bdf8",
+  },
   Qualified: {
-    dot: "bg-violet-500",
-    badge: "bg-violet-50 text-violet-700",
-    bar: "bg-violet-500",
+    dot: "bg-teal-400",
+    badge: "bg-teal-400/10 text-teal-300 border-teal-400/25",
+    bar: "bg-teal-400",
+    hex: "#2dd4bf",
   },
   Proposal: {
-    dot: "bg-amber-500",
-    badge: "bg-amber-50 text-amber-700",
-    bar: "bg-amber-500",
+    dot: "bg-amber-400",
+    badge: "bg-amber-400/10 text-amber-300 border-amber-400/25",
+    bar: "bg-amber-400",
+    hex: "#fbbf24",
   },
   Won: {
-    dot: "bg-brand-500",
-    badge: "bg-brand-50 text-brand-700",
-    bar: "bg-brand-500",
+    dot: "bg-emerald-400",
+    badge: "bg-emerald-400/10 text-emerald-300 border-emerald-400/25",
+    bar: "bg-emerald-400",
+    hex: "#34d399",
   },
-  Lost: { dot: "bg-rose-500", badge: "bg-rose-50 text-rose-700", bar: "bg-rose-500" },
+  Lost: {
+    dot: "bg-slate-500",
+    badge: "bg-white/[0.04] text-slate-400 border-white/10",
+    bar: "bg-slate-600",
+    hex: "#66716f",
+  },
 };
 
 export const PRIORITY_STYLES = {
-  Low: "bg-slate-100 text-slate-600",
-  Medium: "bg-amber-50 text-amber-700",
-  High: "bg-rose-50 text-rose-700",
+  Low: "bg-white/[0.04] text-slate-400 border-white/10",
+  Medium: "bg-amber-400/10 text-amber-300 border-amber-400/25",
+  High: "bg-rose-400/10 text-rose-300 border-rose-400/25",
 };
 
 export const TASK_STATUS_STYLES = {
-  Pending: "bg-slate-100 text-slate-600",
-  "In Progress": "bg-sky-50 text-sky-700",
-  Completed: "bg-brand-50 text-brand-700",
+  Pending: "bg-white/[0.04] text-slate-400 border-white/10",
+  "In Progress": "bg-sky-400/10 text-sky-300 border-sky-400/25",
+  Completed: "bg-emerald-400/10 text-emerald-300 border-emerald-400/25",
 };

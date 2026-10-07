@@ -2,28 +2,31 @@ import { cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-/* Button variants — the workhorse of the UI. */
+/* Button variants — precise, engineered, professional SaaS aesthetic */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] select-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/40 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.99] select-none cursor-pointer",
   {
     variants: {
       variant: {
         primary:
-          "brand-gradient brand-gradient-hover text-white shadow-sm",
+          "bg-teal-400 text-slate-950 font-semibold hover:bg-teal-300 active:bg-teal-500",
         secondary:
-          "bg-surface-muted text-ink hover:bg-brand-50 border border-line",
+          "bg-white/[0.06] text-slate-100 hover:bg-white/10 border border-white/10",
         outline:
-          "border border-line bg-surface text-ink hover:bg-surface-muted",
-        ghost: "text-ink-soft hover:bg-surface-muted hover:text-ink",
-        danger: "bg-rose-600 text-white hover:bg-rose-700 shadow-sm",
-        subtle: "bg-brand-50 text-brand-700 hover:bg-brand-100",
+          "border border-white/10 bg-transparent text-slate-300 hover:bg-white/5 hover:text-white",
+        ghost:
+          "text-slate-400 hover:bg-white/5 hover:text-slate-100",
+        danger:
+          "bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30",
+        subtle:
+          "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white",
       },
       size: {
-        sm: "h-9 px-3.5",
-        md: "h-10 px-5",
-        lg: "h-12 px-6 text-[15px]",
-        icon: "h-10 w-10 p-0",
-        "icon-sm": "h-9 w-9 p-0",
+        sm: "h-8 px-2.5 text-xs font-medium",
+        md: "h-9 px-3.5 text-sm",
+        lg: "h-10 px-4 text-sm font-medium",
+        icon: "h-9 w-9 p-0",
+        "icon-sm": "h-8 w-8 p-0",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

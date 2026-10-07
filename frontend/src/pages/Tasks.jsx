@@ -53,18 +53,18 @@ import { cn } from "../lib/utils";
 
 // ─── Priority accent bar colours ──────────────────────────────────────────────
 const PRIORITY_BAR = {
-  High: "bg-rose-400",
-  Medium: "bg-amber-400",
+  High: "bg-rose-500",
+  Medium: "bg-amber-500",
   Low: "bg-slate-300",
 };
 
 // ─── Group definitions (in display order) ────────────────────────────────────
 const GROUPS = [
-  { key: "overdue",   label: "Overdue",      labelClass: "text-rose-700",   countClass: "bg-rose-50 text-rose-700" },
-  { key: "today",     label: "Due today",    labelClass: "text-amber-700",  countClass: "bg-amber-50 text-amber-700" },
-  { key: "upcoming",  label: "Upcoming",     labelClass: "text-ink",        countClass: "bg-surface-muted text-ink-soft" },
-  { key: "nodate",    label: "No due date",  labelClass: "text-ink-soft",   countClass: "bg-surface-muted text-ink-soft" },
-  { key: "completed", label: "Completed",    labelClass: "text-brand-700",  countClass: "bg-brand-50 text-brand-700" },
+  { key: "overdue",   label: "Overdue",      labelClass: "text-rose-400",   countClass: "bg-rose-500/10 text-rose-400 border border-rose-500/25" },
+  { key: "today",     label: "Due today",    labelClass: "text-amber-400",  countClass: "bg-amber-500/10 text-amber-400 border border-amber-500/25" },
+  { key: "upcoming",  label: "Upcoming",     labelClass: "text-slate-100",  countClass: "bg-slate-800 text-slate-200" },
+  { key: "nodate",    label: "No due date",  labelClass: "text-slate-500",  countClass: "bg-slate-800 text-slate-500" },
+  { key: "completed", label: "Completed",    labelClass: "text-emerald-400", countClass: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" },
 ];
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
@@ -152,26 +152,26 @@ function TaskFormDialog({ open, onClose, task, leads, onSaved }) {
     <Dialog
       open={open}
       onClose={onClose}
-      title={isEdit ? "Edit task" : "New task"}
-      description={isEdit ? "Update the details below." : "Fill in the details to create a task."}
+      title={isEdit ? "Edit Task" : "New Task"}
+      description={isEdit ? "Update follow-up commitment details." : "Create a new follow-up commitment."}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
         {/* Title */}
-        <Field label="Title" error={errors.title?.message}>
+        <Field label="Task Title" error={errors.title?.message}>
           <Input
-            placeholder="e.g. Follow up with Acme Corp"
+            placeholder="e.g. Follow up on proposal terms"
             {...register("title", { required: "Title is required" })}
           />
         </Field>
 
         {/* Description */}
-        <Field label="Description">
-          <Textarea rows={3} placeholder="Optional notes…" {...register("description")} />
+        <Field label="Notes & Context">
+          <Textarea rows={3} placeholder="Additional context..." {...register("description")} />
         </Field>
 
         {/* Due date + Priority */}
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Due date">
+          <Field label="Due Date">
             <Input type="date" {...register("dueDate")} />
           </Field>
           <Field label="Priority">
@@ -193,7 +193,7 @@ function TaskFormDialog({ open, onClose, task, leads, onSaved }) {
         </Field>
 
         {/* Linked lead */}
-        <Field label="Linked lead">
+        <Field label="Associated Deal / Lead">
           <Select {...register("relatedLead")}>
             <option value="">No linked lead</option>
             {leads.map((l) => (
@@ -205,12 +205,12 @@ function TaskFormDialog({ open, onClose, task, leads, onSaved }) {
         </Field>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-1">
+        <div className="flex gap-2 pt-2">
           <Button type="button" variant="outline" className="flex-1" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" className="flex-1" loading={isSubmitting}>
-            {isEdit ? "Save changes" : "Create task"}
+            {isEdit ? "Save Changes" : "Create Task"}
           </Button>
         </div>
       </form>
@@ -226,12 +226,12 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
   const dueToday = task.dueDate ? isToday(new Date(task.dueDate)) : false;
 
   return (
-    <div className="group relative flex items-start gap-3 px-5 py-4 transition-colors hover:bg-surface-muted/50">
-      {/* Priority accent bar — always visible, not only on hover */}
+    <div className="group relative flex items-start gap-3 px-4 py-3 transition-colors hover:bg-slate-800/40">
+      {/* Priority accent bar */}
       <span
         aria-hidden
         className={cn(
-          "absolute left-0 top-3 bottom-3 w-[3px] rounded-full",
+          "absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-r",
           PRIORITY_BAR[task.priority] ?? "bg-slate-300"
         )}
       />
@@ -241,20 +241,20 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
         onClick={() => onToggle(task)}
         aria-label={done ? "Mark as pending" : "Mark as completed"}
         className={cn(
-          "mt-0.5 shrink-0 rounded-full p-0.5 transition-colors",
+          "mt-0.5 shrink-0 rounded p-0.5 transition-colors cursor-pointer",
           done
-            ? "text-brand-600 hover:text-brand-400"
+            ? "text-emerald-400 hover:text-emerald-400"
             : inProg
-            ? "text-sky-500 hover:text-brand-500"
-            : "text-ink-soft hover:text-brand-500"
+            ? "text-teal-400 hover:text-slate-50"
+            : "text-slate-300 hover:text-slate-300"
         )}
       >
         {done ? (
-          <CheckCircle2 className="h-5 w-5" />
+          <CheckCircle2 className="h-4.5 w-4.5" />
         ) : inProg ? (
-          <CircleDot className="h-5 w-5" />
+          <CircleDot className="h-4.5 w-4.5" />
         ) : (
-          <Circle className="h-5 w-5" />
+          <Circle className="h-4.5 w-4.5" />
         )}
       </button>
 
@@ -263,8 +263,8 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
         {/* Title */}
         <p
           className={cn(
-            "text-sm font-medium leading-snug",
-            done ? "line-through text-ink-soft" : "text-ink"
+            "text-xs font-semibold leading-snug",
+            done ? "line-through text-slate-400" : "text-slate-50"
           )}
         >
           {task.title}
@@ -272,46 +272,46 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
 
         {/* Description */}
         {task.description && (
-          <p className="mt-0.5 truncate text-xs text-ink-soft">{task.description}</p>
+          <p className="mt-0.5 truncate text-[11px] text-slate-400">{task.description}</p>
         )}
 
         {/* Meta chips */}
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {/* Due date chip */}
           {task.dueDate && (
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-xs font-medium",
+                "inline-flex items-center gap-1 rounded px-1.5 py-0.2 text-[10px] font-medium tabular-nums",
                 overdue
-                  ? "bg-rose-50 text-rose-700"
+                  ? "bg-rose-500/10 text-rose-400 border border-rose-500/25"
                   : dueToday
-                  ? "bg-amber-50 text-amber-700"
-                  : "bg-surface-muted text-ink-soft"
+                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/25"
+                  : "bg-slate-800 text-slate-300"
               )}
             >
               {overdue ? (
-                <AlertTriangle className="h-3 w-3" />
+                <AlertTriangle className="h-2.5 w-2.5" />
               ) : (
-                <Clock className="h-3 w-3" />
+                <Clock className="h-2.5 w-2.5" />
               )}
               {overdue ? `Overdue · ${shortDate(task.dueDate)}` : dueToday ? `Today · ${shortDate(task.dueDate)}` : shortDate(task.dueDate)}
             </span>
           )}
 
           {/* Priority badge */}
-          <Badge className={cn("text-xs", PRIORITY_STYLES[task.priority])}>
+          <Badge className={cn("text-[10px] px-1.5 py-0.2", PRIORITY_STYLES[task.priority])}>
             {task.priority}
           </Badge>
 
           {/* Status badge */}
-          <Badge className={cn("text-xs", TASK_STATUS_STYLES[task.status])}>
+          <Badge className={cn("text-[10px] px-1.5 py-0.2", TASK_STATUS_STYLES[task.status])}>
             {task.status}
           </Badge>
 
           {/* Linked lead chip */}
           {task.relatedLead && (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
-              <Building2 className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1 rounded bg-slate-800 px-1.5 py-0.2 text-[10px] font-medium text-slate-300">
+              <Building2 className="h-2.5 w-2.5" />
               {task.relatedLead.name}
             </span>
           )}
@@ -322,16 +322,16 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
       <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
         <Dropdown
           trigger={
-            <button className="rounded-lg p-1.5 text-ink-soft transition hover:bg-surface-muted hover:text-ink">
-              <MoreHorizontal className="h-4 w-4" />
+            <button className="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200 cursor-pointer">
+              <MoreHorizontal className="h-3.5 w-3.5" />
             </button>
           }
         >
           <DropdownItem onClick={() => onEdit(task)}>
-            <Pencil className="h-4 w-4" /> Edit
+            <Pencil className="h-3.5 w-3.5" /> Edit
           </DropdownItem>
           <DropdownItem danger onClick={() => onDelete(task)}>
-            <Trash2 className="h-4 w-4" /> Delete
+            <Trash2 className="h-3.5 w-3.5" /> Delete
           </DropdownItem>
         </Dropdown>
       </div>
@@ -342,11 +342,11 @@ function TaskRow({ task, onToggle, onEdit, onDelete }) {
 // ─── Group section header (module-level) ──────────────────────────────────────
 function GroupHeader({ label, count, labelClass, countClass }) {
   return (
-    <div className="flex items-center gap-2 border-b border-line bg-surface-muted/30 px-5 py-2">
-      <span className={cn("text-xs font-semibold uppercase tracking-wide", labelClass)}>
+    <div className="flex items-center gap-2 border-b border-slate-800 bg-slate-800/40 px-4 py-2">
+      <span className={cn("text-[11px] font-semibold uppercase tracking-wider", labelClass)}>
         {label}
       </span>
-      <span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold", countClass)}>
+      <span className={cn("rounded px-1.5 py-0.2 text-[10px] font-semibold tabular-nums", countClass)}>
         {count}
       </span>
     </div>
@@ -357,18 +357,17 @@ function GroupHeader({ label, count, labelClass, countClass }) {
 function ProgressCard({ completed, total }) {
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
   return (
-    <Card className="px-5 py-4">
+    <Card className="px-4 py-3.5">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-ink">
-          {completed} of {total} tasks done
+        <span className="text-xs font-medium text-slate-200">
+          <span className="font-semibold text-slate-50 tabular-nums">{completed}</span> of{" "}
+          <span className="font-semibold text-slate-50 tabular-nums">{total}</span> tasks completed
         </span>
-        <span className="text-sm font-semibold text-brand-700">{pct}%</span>
+        <span className="text-xs font-bold text-slate-50 tabular-nums">{pct}%</span>
       </div>
-      {/* Track */}
-      <div className="h-2 w-full rounded-full bg-surface-muted overflow-hidden">
-        {/* Fill — inline style for dynamic width, class for gradient */}
+      <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
         <div
-          className="h-full rounded-full bg-linear-to-r from-brand-400 to-brand-600 transition-all duration-500"
+          className="h-full rounded-full bg-slate-900 transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -496,7 +495,7 @@ export default function Tasks() {
       {/* Status filter tabs + grouped task list */}
       <Card className="overflow-hidden">
         {/* Tabs toolbar */}
-        <div className="border-b border-line px-5 py-3">
+        <div className="border-b border-slate-800 px-5 py-3">
           <Tabs value={tab} onChange={setTab} tabs={STATUS_TABS} />
         </div>
 

@@ -1,36 +1,41 @@
-import { Wifi } from "lucide-react";
-import { Card, SectionHeading } from "../ui";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, TrendingUp, Layers } from "lucide-react";
+import { Card } from "../ui";
 import { currency } from "../../lib/format";
 
 /**
- * The "credit-card" hero from the reference, repurposed for the CRM: a green
- * gradient card surfacing total Pipeline Value with account-style framing.
+ * Executive Pipeline Summary Card:
+ * Clean, structured view of active pipeline value and stage momentum.
  */
-export function HeroCard({ value = 0, label = "Pipeline value" }) {
+export function HeroCard({ value = 0, label = "Active Pipeline" }) {
   return (
-    <Card className="p-6">
-      <SectionHeading title="Pipeline Goal" subtitle="Total deal value" to="/pipeline" />
-
-      <div className="brand-gradient relative mt-5 overflow-hidden rounded-2xl p-5 text-white shadow-[var(--shadow-soft)]">
-        {/* Decorative glow */}
-        <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-
-        <div className="relative flex items-start justify-between">
-          <span className="font-display text-lg font-extrabold tracking-tight">
-            NTP CRM
+    <Card className="p-5">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-900 text-white">
+            <Layers className="h-3.5 w-3.5" />
+          </div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            {label}
           </span>
-          <Wifi className="h-6 w-6 rotate-90 opacity-90" />
         </div>
+        <Link
+          to="/pipeline"
+          className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors"
+        >
+          <span>Pipeline</span>
+          <ArrowUpRight className="h-3 w-3" />
+        </Link>
+      </div>
 
-        <p className="relative mt-6 text-sm text-white/70">{label}</p>
-        <p className="relative mt-1 font-display text-3xl font-bold tracking-tight">
+      <div className="mt-4">
+        <p className="text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
           {currency(value)}
         </p>
-
-        <div className="relative mt-6 flex items-center justify-between text-sm">
-          <span className="tracking-[0.2em] text-white/80">•••• PIPELINE</span>
-          <span className="text-white/70">LIVE</span>
-        </div>
+        <p className="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          Live deal pipeline across active stages
+        </p>
       </div>
     </Card>
   );
