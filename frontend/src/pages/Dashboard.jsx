@@ -205,7 +205,7 @@ function PipelineByStage({ pipeline }) {
                   </span>
                 </span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/6">
                 <div
                   className={cn("h-full rounded-full transition-all", style.bar)}
                   style={{ width: `${Math.max((s.value / maxValue) * 100, 2)}%` }}
@@ -309,12 +309,12 @@ function UpcomingTasks({ tasks }) {
             return (
               <li
                 key={t._id}
-                className="flex items-start gap-2.5 rounded-lg border border-white/[0.07] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
+                className="flex items-start gap-2.5 rounded-lg border border-white/[0.07] bg-white/2 p-2.5 transition-colors hover:bg-white/4"
               >
                 <div
                   className={cn(
                     "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md",
-                    overdue ? "bg-rose-400/10 text-rose-300" : "bg-white/[0.06] text-slate-300"
+                    overdue ? "bg-rose-400/10 text-rose-300" : "bg-white/6 text-slate-300"
                   )}
                 >
                   {overdue ? (
@@ -359,7 +359,7 @@ function TopDeals({ leads }) {
             return (
               <li
                 key={l._id}
-                className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-white/4"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[11px] font-semibold text-slate-400">
@@ -450,13 +450,13 @@ function ActivityTable({ leads }) {
             <th className="pb-2.5 text-right font-medium">Updated</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.06]">
+        <tbody className="divide-y divide-white/6">
           {leads.map((l) => {
             const style = STAGE_STYLES[l.status] || STAGE_STYLES.New;
             return (
               <tr
                 key={l.id}
-                className="transition-colors hover:bg-white/[0.02]"
+                className="transition-colors hover:bg-white/2"
               >
                 <td className="py-3">
                   <div className="flex items-center gap-2.5">
@@ -492,7 +492,7 @@ function Kpi({ icon: Icon, label, value, note }) {
     <Card className="p-5">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-slate-400">{label}</span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-slate-300">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/4 text-slate-300">
           <Icon className="h-4 w-4" />
         </span>
       </div>

@@ -41,7 +41,7 @@ export function AppLayout() {
       <div className="relative flex min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto px-4 pb-8 pt-2 md:px-6">
-          <div className="mx-auto max-w-[1400px]">
+          <div className="mx-auto max-w-350">
             <Outlet />
           </div>
         </main>
